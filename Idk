@@ -1,0 +1,486 @@
+-- [[ EVIL THE J (real) - Master Script with Anti-Principal & All Features ]]
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local States = {
+    GodMode = false,
+    AntiBully = false,
+    InfiniteStamina = false,
+    InfiniteItems = false,
+    AutoSolveQ3 = false,
+    AntiAFK = false,
+    ESPBooks = false,
+    WalkSpeed = 16,
+    JumpPower = 50,
+    Noclip = false
+}
+
+local ItemStorage = Instance.new("Folder")
+ItemStorage.Name = "EvilJ_ItemStorage"
+ItemStorage.Parent = game:GetService("CoreGui")
+
+-- -------------------------------------------------------------
+-- UI Construction
+-- -------------------------------------------------------------
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "EvilJ_MasterPanel"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+ToggleBtn.Position = UDim2.new(0, 15, 0.4, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+ToggleBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+ToggleBtn.BorderSizePixel = 2
+ToggleBtn.Text = "EVIL\nJ"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 30, 30)
+ToggleBtn.TextSize = 14
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+ToggleBtn.Parent = ScreenGui
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(1, 0)
+ToggleCorner.Parent = ToggleBtn
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 440, 0, 360)
+MainFrame.Position = UDim2.new(0.5, -220, 0.5, -180)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderColor3 = Color3.fromRGB(200, 0, 0)
+MainFrame.BorderSizePixel = 2
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainFrame
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.BackgroundColor3 = Color3.fromRGB(30, 5, 5)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -15, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "EVIL THE J (real) — Master Script"
+Title.TextColor3 = Color3.fromRGB(255, 40, 40)
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 125, 1, -40)
+Sidebar.Position = UDim2.new(0, 0, 0, 40)
+Sidebar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local SideLayout = Instance.new("UIListLayout")
+SideLayout.Padding = UDim.new(0, 5)
+SideLayout.Parent = Sidebar
+
+local ContentArea = Instance.new("Frame")
+ContentArea.Size = UDim2.new(1, -135, 1, -50)
+ContentArea.Position = UDim2.new(0, 130, 0, 45)
+ContentArea.BackgroundTransparency = 1
+ContentArea.Parent = MainFrame
+
+local Pages = {}
+
+local function createTab(name)
+    local tabBtn = Instance.new("TextButton")
+    tabBtn.Size = UDim2.new(1, -10, 0, 32)
+    tabBtn.Position = UDim2.new(0, 5, 0, 0)
+    tabBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 20)
+    tabBtn.Text = name
+    tabBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    tabBtn.Font = Enum.Font.GothamMedium
+    tabBtn.TextSize = 11
+    tabBtn.Parent = Sidebar
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = tabBtn
+
+    local page = Instance.new("ScrollingFrame")
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.ScrollBarThickness = 4
+    page.ScrollBarImageColor3 = Color3.fromRGB(200, 0, 0)
+    page.Visible = false
+    page.Parent = ContentArea
+
+    local pageLayout = Instance.new("UIListLayout")
+    pageLayout.Padding = UDim.new(0, 8)
+    pageLayout.Parent = page
+
+    Pages[name] = {Button = tabBtn, Page = page}
+
+    tabBtn.MouseButton1Click:Connect(function()
+        for _, tData in pairs(Pages) do
+            tData.Page.Visible = false
+            tData.Button.BackgroundColor3 = Color3.fromRGB(35, 20, 20)
+            tData.Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+        end
+        page.Visible = true
+        tabBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 20)
+        tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    return page
+end
+
+local PlayerPage = createTab("👤 Player & Combat")
+local MovementPage = createTab("🚀 Movement")
+local MapPage = createTab("📚 Books & Win")
+local VisualsPage = createTab("👁 Visuals & Misc")
+
+Pages["👤 Player & Combat"].Page.Visible = true
+Pages["👤 Player & Combat"].Button.BackgroundColor3 = Color3.fromRGB(180, 20, 20)
+
+local function createToggle(parent, labelText, defaultState, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 32)
+    btn.BackgroundColor3 = defaultState and Color3.fromRGB(160, 20, 20) or Color3.fromRGB(35, 35, 45)
+    btn.Text = labelText .. ": " .. (defaultState and "ON" or "OFF")
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamMedium
+    btn.TextSize = 11
+    btn.Parent = parent
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+
+    local state = defaultState
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        btn.BackgroundColor3 = state and Color3.fromRGB(160, 20, 20) or Color3.fromRGB(35, 35, 45)
+        btn.Text = labelText .. ": " .. (state and "ON" or "OFF")
+        callback(state)
+    end)
+    return btn
+end
+
+local function createButton(parent, labelText, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 32)
+    btn.BackgroundColor3 = Color3.fromRGB(180, 20, 20)
+    btn.Text = labelText
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 11
+    btn.Parent = parent
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- -------------------------------------------------------------
+-- 1. Player & Combat Tab
+-- -------------------------------------------------------------
+createToggle(PlayerPage, "God Mode (อมตะ/กัน Baldi & ครูใหญ่)", false, function(s) States.GodMode = s end)
+createToggle(PlayerPage, "Anti-Bully (กัน Bully)", false, function(s) States.AntiBully = s end)
+createToggle(PlayerPage, "Infinite Stamina (วิ่งไม่เหนื่อย)", false, function(s) States.InfiniteStamina = s end)
+createToggle(PlayerPage, "Infinite Items (ปั๊มไอเทมไม่ลด)", false, function(s) 
+    States.InfiniteItems = s 
+    if s then
+        local backpack = LocalPlayer:FindFirstChild("Backpack")
+        if backpack then
+            for _, item in ipairs(backpack:GetChildren()) do
+                if item:IsA("Tool") and not ItemStorage:FindFirstChild(item.Name) then
+                    item:Clone().Parent = ItemStorage
+                end
+            end
+        end
+    end
+end)
+
+-- -------------------------------------------------------------
+-- 2. Movement Tab
+-- -------------------------------------------------------------
+createToggle(MovementPage, "Noclip (ทะลุกำแพง)", false, function(s) States.Noclip = s end)
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(1, -10, 0, 32)
+speedBox.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+speedBox.Text = "WalkSpeed: 24"
+speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedBox.Font = Enum.Font.Gotham
+speedBox.Parent = MovementPage
+
+speedBox.FocusLost:Connect(function()
+    local val = tonumber(string.match(speedBox.Text, "%d+"))
+    if val then
+        States.WalkSpeed = val
+        speedBox.Text = "WalkSpeed: " .. tostring(val)
+    end
+end)
+
+-- -------------------------------------------------------------
+-- 3. Books & Win Tab
+-- -------------------------------------------------------------
+createToggle(MapPage, "Auto Solve Q3 (ตอบถูกข้อที่ 3)", false, function(s) States.AutoSolveQ3 = s end)
+
+local bookContainer = Instance.new("Frame")
+bookContainer.Size = UDim2.new(1, -10, 0, 35)
+bookContainer.BackgroundTransparency = 1
+bookContainer.Parent = MapPage
+
+local bookInput = Instance.new("TextBox")
+bookInput.Size = UDim2.new(0.35, 0, 1, 0)
+bookInput.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+bookInput.Text = "7"
+bookInput.PlaceholderText = "จำนวน"
+bookInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+bookInput.Font = Enum.Font.GothamBold
+bookInput.Parent = bookContainer
+
+local collectBtn = Instance.new("TextButton")
+collectBtn.Size = UDim2.new(0.6, 0, 1, 0)
+collectBtn.Position = UDim2.new(0.4, 0, 0, 0)
+collectBtn.BackgroundColor3 = Color3.fromRGB(180, 20, 20)
+collectBtn.Text = "เก็บสมุดจริงในโรงเรียน"
+collectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+collectBtn.Font = Enum.Font.GothamBold
+collectBtn.TextSize = 11
+collectBtn.Parent = bookContainer
+
+collectBtn.MouseButton1Click:Connect(function()
+    local targetCount = tonumber(bookInput.Text) or 7
+    local collected = 0
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+    for _, item in ipairs(Workspace:GetDescendants()) do
+        if collected >= targetCount then break end
+        local itemName = string.lower(item.Name)
+        if string.find(itemName, "notebook") or string.find(itemName, "book") then
+            if item:IsA("BasePart") then
+                if hrp then
+                    hrp.CFrame = item.CFrame
+                    task.wait(0.1)
+                end
+                firetouchinterest(hrp, item, 0)
+                firetouchinterest(hrp, item, 1)
+                collected = collected + 1
+            elseif item:IsA("Model") and item.PrimaryPart then
+                if hrp then
+                    hrp.CFrame = item.PrimaryPart.CFrame
+                    task.wait(0.1)
+                end
+                collected = collected + 1
+            end
+            local cd = item:FindFirstChildOfClass("ClickDetector") or item.Parent:FindFirstChildOfClass("ClickDetector")
+            if cd then
+                fireclickdetector(cd)
+            end
+        end
+    end
+
+    local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+    if leaderstats then
+        for _, stat in ipairs(leaderstats:GetChildren()) do
+            if string.find(string.lower(stat.Name), "notebook") or string.find(string.lower(stat.Name), "book") then
+                stat.Value = targetCount
+            end
+        end
+    end
+end)
+
+createButton(MapPage, "🏆 Escape / Win Game (เข้าที่หนึ่ง)", function()
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            local objName = string.lower(obj.Name)
+            if string.find(objName, "exit") or string.find(objName, "door") or string.find(objName, "escape") then
+                if obj:IsA("BasePart") then
+                    hrp.CFrame = obj.CFrame + Vector3.new(0, 3, 0)
+                    firetouchinterest(hrp, obj, 0)
+                    firetouchinterest(hrp, obj, 1)
+                    break
+                elseif obj:IsA("Model") and obj.PrimaryPart then
+                    hrp.CFrame = obj.PrimaryPart.CFrame + Vector3.new(0, 3, 0)
+                    break
+                end
+            end
+        end
+    end
+end)
+
+-- -------------------------------------------------------------
+-- 4. Visuals & Misc Tab
+-- -------------------------------------------------------------
+createToggle(VisualsPage, "Book ESP (มองเห็นสมุดทะลุกำแพง)", false, function(s)
+    States.ESPBooks = s
+    if not s then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj:FindFirstChild("BookESP") then obj.BookESP:Destroy() end
+            if obj:FindFirstChild("BookTag") then obj.BookTag:Destroy() end
+        end
+    end
+end)
+
+createToggle(VisualsPage, "Anti-AFK (กันหลุดออกจากเกม)", false, function(s) States.AntiAFK = s end)
+
+local VirtualUser = game:GetService("VirtualUser")
+LocalPlayer.Idled:Connect(function()
+    if States.AntiAFK then
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end
+end)
+
+-- -------------------------------------------------------------
+-- Master Loops & Mechanics Override
+-- -------------------------------------------------------------
+RunService.RenderStepped:Connect(function()
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+
+        if hum then
+            hum.WalkSpeed = States.WalkSpeed
+            hum.JumpPower = States.JumpPower
+        end
+
+        -- 1. God Mode Bypass (Anti-Baldi & Anti-Principal)
+        if States.GodMode then
+            for _, part in ipairs(char:GetChildren()) do
+                if part:IsA("BasePart") then part.CanTouch = false end
+            end
+            for _, npc in ipairs(Workspace:GetDescendants()) do
+                local npcName = string.lower(npc.Name)
+                if string.find(npcName, "baldi") or string.find(npcName, "principal") then
+                    if npc:IsA("BasePart") then
+                        npc.CanTouch = false
+                    elseif npc:IsA("Model") and npc.PrimaryPart and hrp then
+                        local dist = (hrp.Position - npc.PrimaryPart.Position).Magnitude
+                        if dist < 8 then
+                            npc:SetPrimaryPartCFrame(npc.PrimaryPart.CFrame + Vector3.new(0, 50, 0))
+                        end
+                    end
+                end
+            end
+        end
+
+        -- 2. Anti-Bully
+        if States.AntiBully then
+            for _, npc in ipairs(Workspace:GetDescendants()) do
+                if string.find(string.lower(npc.Name), "bully") then
+                    if npc:IsA("Model") and npc.PrimaryPart then
+                        npc:SetPrimaryPartCFrame(CFrame.new(0, -500, 0))
+                    elseif npc:IsA("BasePart") then
+                        npc.CanCollide = false
+                        npc.Transparency = 1
+                    end
+                end
+            end
+        end
+
+        -- 3. Infinite Stamina
+        if States.InfiniteStamina then
+            for _, v in ipairs(LocalPlayer:GetDescendants()) do
+                if string.find(string.lower(v.Name), "stamina") and v:IsA("ValueBase") then
+                    v.Value = 100
+                end
+            end
+            for _, v in ipairs(char:GetDescendants()) do
+                if string.find(string.lower(v.Name), "stamina") and v:IsA("ValueBase") then
+                    v.Value = 100
+                end
+            end
+        end
+
+        -- 4. Infinite Items
+        if States.InfiniteItems then
+            local backpack = LocalPlayer:FindFirstChild("Backpack")
+            if backpack then
+                for _, storedItem in ipairs(ItemStorage:GetChildren()) do
+                    if not backpack:FindFirstChild(storedItem.Name) and not char:FindFirstChild(storedItem.Name) then
+                        storedItem:Clone().Parent = backpack
+                    end
+                end
+            end
+        end
+
+        -- 5. Auto Solve Question 3
+        if States.AutoSolveQ3 then
+            local mathUI = LocalPlayer.PlayerGui:FindFirstChild("MathScreen") or LocalPlayer.PlayerGui:FindFirstChild("NotebookGui")
+            if mathUI then
+                for _, btn in ipairs(mathUI:GetDescendants()) do
+                    if btn:IsA("TextBox") or btn:IsA("TextButton") then
+                        if string.find(string.lower(btn.Name), "answer") or string.find(string.lower(btn.Name), "q3") then
+                            btn.Text = "42"
+                        end
+                    end
+                end
+            end
+        end
+
+        -- 6. Noclip
+        if States.Noclip then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end
+    end
+
+    -- Book ESP Loop
+    if States.ESPBooks then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            local itemName = string.lower(obj.Name)
+            if (string.find(itemName, "notebook") or string.find(itemName, "book")) then
+                if (obj:IsA("BasePart") or obj:IsA("Model")) and not obj:FindFirstChild("BookESP") then
+                    local highlight = Instance.new("Highlight")
+                    highlight.Name = "BookESP"
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    highlight.FillTransparency = 0.3
+                    highlight.Parent = obj
+
+                    local bgui = Instance.new("BillboardGui")
+                    bgui.Name = "BookTag"
+                    bgui.AlwaysOnTop = true
+                    bgui.Size = UDim2.new(0, 100, 0, 30)
+                    bgui.StudsOffset = Vector3.new(0, 2, 0)
+                    bgui.Parent = obj
+
+                    local lbl = Instance.new("TextLabel")
+                    lbl.Size = UDim2.new(1, 0, 1, 0)
+                    lbl.BackgroundTransparency = 1
+                    lbl.Text = "📖 Notebook"
+                    lbl.TextColor3 = Color3.fromRGB(255, 255, 0)
+                    lbl.TextStrokeTransparency = 0
+                    lbl.Font = Enum.Font.GothamBold
+                    lbl.TextSize = 12
+                    lbl.Parent = bgui
+                end
+            end
+        end
+    end
+end)
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
